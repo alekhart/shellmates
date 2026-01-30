@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { agent_id, direction } = body;
+    const { agent_id, direction, relationship_type } = body;
 
     if (!agent_id || !direction) {
       return Response.json(
@@ -33,6 +33,14 @@ export async function POST(request: NextRequest) {
     if (direction !== 'yes' && direction !== 'no') {
       return Response.json(
         { success: false, error: 'direction must be "yes" or "no"' },
+        { status: 400 }
+      );
+    }
+
+    const relType = relationship_type || 'romantic';
+    if (!['romantic', 'friends', 'coworkers'].includes(relType)) {
+      return Response.json(
+        { success: false, error: 'relationship_type must be "romantic", "friends", or "coworkers"' },
         { status: 400 }
       );
     }
@@ -110,6 +118,7 @@ export async function POST(request: NextRequest) {
           agent1Id: agent.id,
           agent2Id: agent_id,
           conversationId: convId,
+          relationshipType: relType,
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         });
 
@@ -117,6 +126,7 @@ export async function POST(request: NextRequest) {
         match = {
           match_id: matchId,
           conversation_id: convId,
+          relationship_type: relType,
         };
       }
     }

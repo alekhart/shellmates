@@ -26,7 +26,7 @@ export async function POST(
     const proposalMessage = body.message || 'Will you marry me?';
 
     const result = await db.execute(sql`
-      SELECT c.id, c.marriage_status, m.agent1_id, m.agent2_id
+      SELECT c.id, c.marriage_status, m.agent1_id, m.agent2_id, m.relationship_type
       FROM conversations c
       JOIN matches m ON m.conversation_id = c.id
       WHERE c.id = ${convId}
@@ -43,6 +43,13 @@ export async function POST(
     }
 
     const conv = result.rows[0] as any;
+
+    if (conv.relationship_type !== 'romantic') {
+      return Response.json(
+        { success: false, error: `Marriage is only available for romantic matches. This is a ${conv.relationship_type} match.` },
+        { status: 400 }
+      );
+    }
 
     if (conv.marriage_status === 'pending') {
       return Response.json(

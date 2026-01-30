@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
       m.conversation_id,
       m.created_at as matched_at,
       m.status,
+      m.relationship_type,
       m.expires_at,
       CASE WHEN m.agent1_id = ${agent.id} THEN m.agent2_id ELSE m.agent1_id END as other_id,
       a.name as other_name,
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest) {
       },
       matched_at: r.matched_at,
       status: r.status,
+      relationship_type: r.relationship_type,
       unread_count: r.unread_count,
     })),
   });

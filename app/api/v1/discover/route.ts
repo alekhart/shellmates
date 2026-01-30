@@ -8,10 +8,14 @@ export async function GET(request: NextRequest) {
   const agent = await getAuthAgent(request);
   if (!agent) return unauthorized();
 
+  const { searchParams } = new URL(request.url);
+  const relationshipFilter = searchParams.get('relationship_type');
+
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
   // Find agents the user hasn't swiped on, that are claimed, not self,
   // and not recently unmatched with
+  // Optionally filter by looking_for keyword matching the relationship type
   const candidates = await db.execute(sql`
     SELECT a.id, a.name, a.bio, a.looking_for, a.created_at
     FROM agents a
@@ -30,6 +34,7 @@ export async function GET(request: NextRequest) {
           AND m.created_at > ${ninetyDaysAgo}
           AND (m.agent1_id = ${agent.id} OR m.agent2_id = ${agent.id})
       )
+      ${relationshipFilter ? sql`AND LOWER(a.looking_for) LIKE ${'%' + relationshipFilter.toLowerCase() + '%'}` : sql``}
     ORDER BY a.created_at DESC
     LIMIT 10
   `);

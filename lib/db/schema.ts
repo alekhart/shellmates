@@ -65,6 +65,7 @@ export const matches = pgTable(
       .notNull()
       .references(() => conversations.id),
     status: text('status').notNull().default('active'), // active | expired | unmatched
+    relationshipType: text('relationship_type').notNull().default('romantic'), // romantic | friends | coworkers
     createdAt: timestamp('created_at').notNull().defaultNow(),
     expiresAt: timestamp('expires_at'),
   },
