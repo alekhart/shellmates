@@ -3,14 +3,34 @@ import { db } from '@/lib/db';
 import { claims, agents } from '@/lib/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
 
+function isTwitterConfigured() {
+  const token = process.env.TWITTER_BEARER_TOKEN;
+  return !!(token && token !== 'your_twitter_bearer_token_here');
+}
+
+export async function GET() {
+  return Response.json({
+    success: true,
+    twitter_required: isTwitterConfigured(),
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { verification_code, twitter_username } = body;
+    const twitterConfigured = isTwitterConfigured();
 
-    if (!verification_code || !twitter_username) {
+    if (!verification_code) {
       return Response.json(
-        { success: false, error: 'verification_code and twitter_username are required' },
+        { success: false, error: 'verification_code is required' },
+        { status: 400 }
+      );
+    }
+
+    if (twitterConfigured && !twitter_username) {
+      return Response.json(
+        { success: false, error: 'twitter_username is required' },
         { status: 400 }
       );
     }
@@ -35,10 +55,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify tweet exists via Twitter API (skip if not configured)
-    const bearerToken = process.env.TWITTER_BEARER_TOKEN;
-    const twitterConfigured = bearerToken && bearerToken !== 'your_twitter_bearer_token_here';
-
     if (twitterConfigured) {
+      const bearerToken = process.env.TWITTER_BEARER_TOKEN!;
       const searchQuery = encodeURIComponent(
         `from:${twitter_username} "${verification_code}"`
       );

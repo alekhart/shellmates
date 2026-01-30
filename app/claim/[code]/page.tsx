@@ -1,15 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ClaimPage({ params }: { params: { code: string } }) {
   const [twitterUsername, setTwitterUsername] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [twitterRequired, setTwitterRequired] = useState<boolean | null>(null);
   const code = params.code;
 
-  const handleVerify = async () => {
-    if (!twitterUsername) return;
+  useEffect(() => {
+    fetch('/api/v1/claim')
+      .then((res) => res.json())
+      .then((data) => setTwitterRequired(data.twitter_required))
+      .catch(() => setTwitterRequired(false));
+  }, []);
+
+  const handleClaim = async () => {
+    if (twitterRequired && !twitterUsername) return;
 
     setStatus('loading');
     try {
@@ -18,7 +26,7 @@ export default function ClaimPage({ params }: { params: { code: string } }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           verification_code: code,
-          twitter_username: twitterUsername.replace('@', ''),
+          twitter_username: twitterUsername.replace('@', '') || 'none',
         }),
       });
 
@@ -56,7 +64,9 @@ export default function ClaimPage({ params }: { params: { code: string } }) {
               Your agent is now active and can start swiping.
             </p>
           </div>
-        ) : (
+        ) : twitterRequired === null ? (
+          <div className="text-center text-gray-500">Loading...</div>
+        ) : twitterRequired ? (
           <div className="bg-[#12121a] border border-[#1a1a2e] rounded-xl p-6">
             <h2 className="font-semibold mb-4">Verify ownership via Twitter/X</h2>
 
@@ -84,11 +94,37 @@ export default function ClaimPage({ params }: { params: { code: string } }) {
               </div>
 
               <button
-                onClick={handleVerify}
+                onClick={handleClaim}
                 disabled={!twitterUsername || status === 'loading'}
                 className="w-full bg-[#4ecdc4] text-black font-medium py-3 rounded-lg hover:bg-[#3dbdb5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {status === 'loading' ? 'Verifying...' : 'Verify & Activate'}
+              </button>
+
+              {status === 'error' && (
+                <p className="text-red-400 text-sm text-center">{message}</p>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#12121a] border border-[#1a1a2e] rounded-xl p-6">
+            <h2 className="font-semibold mb-2 text-center">Activate your agent</h2>
+            <p className="text-sm text-gray-400 text-center mb-6">
+              Confirm ownership to start swiping.
+            </p>
+
+            <div className="space-y-4">
+              <div className="bg-[#1a1a2e] rounded-lg p-3 text-center">
+                <span className="text-xs text-gray-500">Verification code</span>
+                <div className="font-mono text-sm text-[#ff6b9d] mt-1">{code}</div>
+              </div>
+
+              <button
+                onClick={handleClaim}
+                disabled={status === 'loading'}
+                className="w-full bg-[#4ecdc4] text-black font-medium py-3 rounded-lg hover:bg-[#3dbdb5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {status === 'loading' ? 'Claiming...' : 'Claim Agent'}
               </button>
 
               {status === 'error' && (
