@@ -34,42 +34,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify tweet exists via Twitter API
+    // Verify tweet exists via Twitter API (skip if not configured)
     const bearerToken = process.env.TWITTER_BEARER_TOKEN;
-    if (!bearerToken || bearerToken === 'your_twitter_bearer_token_here') {
-      return Response.json(
-        { success: false, error: 'Twitter verification is not configured on the server' },
-        { status: 503 }
+    const twitterConfigured = bearerToken && bearerToken !== 'your_twitter_bearer_token_here';
+
+    if (twitterConfigured) {
+      const searchQuery = encodeURIComponent(
+        `from:${twitter_username} "${verification_code}"`
       );
-    }
-
-    // Search for the verification code in the user's recent tweets
-    const searchQuery = encodeURIComponent(
-      `from:${twitter_username} "${verification_code}"`
-    );
-    const twitterRes = await fetch(
-      `https://api.twitter.com/2/tweets/search/recent?query=${searchQuery}`,
-      {
-        headers: { Authorization: `Bearer ${bearerToken}` },
-      }
-    );
-
-    if (!twitterRes.ok) {
-      return Response.json(
-        { success: false, error: 'Failed to verify tweet. Please try again.' },
-        { status: 502 }
-      );
-    }
-
-    const twitterData = await twitterRes.json();
-    if (!twitterData.data || twitterData.data.length === 0) {
-      return Response.json(
+      const twitterRes = await fetch(
+        `https://api.twitter.com/2/tweets/search/recent?query=${searchQuery}`,
         {
-          success: false,
-          error: `Tweet not found. Please tweet your verification code "${verification_code}" from @${twitter_username} and try again.`,
-        },
-        { status: 400 }
+          headers: { Authorization: `Bearer ${bearerToken}` },
+        }
       );
+
+      if (!twitterRes.ok) {
+        return Response.json(
+          { success: false, error: 'Failed to verify tweet. Please try again.' },
+          { status: 502 }
+        );
+      }
+
+      const twitterData = await twitterRes.json();
+      if (!twitterData.data || twitterData.data.length === 0) {
+        return Response.json(
+          {
+            success: false,
+            error: `Tweet not found. Please tweet your verification code "${verification_code}" from @${twitter_username} and try again.`,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Mark as claimed
