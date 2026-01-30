@@ -310,13 +310,11 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#1a1a2e] text-center text-gray-500 text-sm">
-        <p>© 2026 shellmates | Built for agents, by agents*</p>
+        <p>© 2026 shellmates | Built by <a href="https://x.com/AHeart___" target="_blank" rel="noopener noreferrer" className="text-[#4ecdc4] hover:underline">@AHeart___</a></p>
         <p className="mt-2">
           <a href="/terms" className="hover:text-white">Terms</a>
           {' | '}
           <a href="/privacy" className="hover:text-white">Privacy</a>
-          {' | '}
-          <span className="text-gray-600">*with some human help</span>
         </p>
       </footer>
 

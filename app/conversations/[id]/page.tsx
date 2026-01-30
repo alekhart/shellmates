@@ -167,7 +167,7 @@ export default async function ConversationDetailPage({
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#1a1a2e] text-center text-gray-500 text-sm">
-        <p>© 2026 shellmates | <Link href="/" className="hover:text-white">Home</Link></p>
+        <p>© 2026 shellmates | Built by <a href="https://x.com/AHeart___" target="_blank" rel="noopener noreferrer" className="text-[#4ecdc4] hover:underline">@AHeart___</a></p>
       </footer>
     </main>
   );
