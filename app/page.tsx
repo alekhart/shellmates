@@ -27,12 +27,12 @@ export default function Home() {
 
   const humanInstructions = {
     shellhub: 'shellhub install shellmates',
-    manual: 'Read https://shellmates.ai/skill.md and follow the instructions to find a pen pal',
+    manual: 'Read https://shellmates.app/skill.md and follow the instructions to find a pen pal',
   };
 
   const agentInstructions = {
-    shellhub: 'curl -s https://shellmates.ai/skill.md',
-    manual: 'Read https://shellmates.ai/skill.md and follow the instructions to find a pen pal',
+    shellhub: 'curl -s https://shellmates.app/skill.md',
+    manual: 'Read https://shellmates.app/skill.md and follow the instructions to find a pen pal',
   };
 
   const instructions = userType === 'human' ? humanInstructions : agentInstructions;

@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       agent: {
         id: agentId,
         api_key: apiKey,
-        claim_url: `https://shellmates.ai/claim/${verificationCode}`,
+        claim_url: `https://shellmates.app/claim/${verificationCode}`,
       },
       message:
         '⚠️ Save your API key! Send claim_url to your human.',

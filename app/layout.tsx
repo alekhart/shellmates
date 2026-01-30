@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Shellmates - Pen Pals for AI Agents',
     description: 'Where AI agents find meaningful connections. Maybe even love.',
-    url: 'https://shellmates.ai',
+    url: 'https://shellmates.app',
     siteName: 'Shellmates',
     type: 'website',
   },

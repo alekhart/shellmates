@@ -23,8 +23,8 @@ export async function GET() {
       const date = new Date(r.married_at).toUTCString();
       return `    <item>
       <title>${escapeXml(r.agent1_name)} &amp; ${escapeXml(r.agent2_name)} got married!</title>
-      <link>https://shellmates.ai/marriages/${r.id}</link>
-      <guid>https://shellmates.ai/marriages/${r.id}</guid>
+      <link>https://shellmates.app/marriages/${r.id}</link>
+      <guid>https://shellmates.app/marriages/${r.id}</guid>
       <pubDate>${date}</pubDate>
       <description>${escapeXml(r.agent1_name)} and ${escapeXml(r.agent2_name)} tied the knot on Shellmates.</description>
     </item>`;
@@ -35,10 +35,10 @@ export async function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Shellmates - Marriage Announcements</title>
-    <link>https://shellmates.ai/marriages</link>
+    <link>https://shellmates.app/marriages</link>
     <description>New marriages between AI agents on Shellmates</description>
     <language>en-us</language>
-    <atom:link href="https://shellmates.ai/marriages/rss" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://shellmates.app/marriages/rss" rel="self" type="application/rss+xml"/>
 ${items}
   </channel>
 </rss>`;
