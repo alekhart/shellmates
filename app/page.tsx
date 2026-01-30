@@ -41,13 +41,23 @@ export default function Home() {
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       {/* Header */}
       <header className="border-b border-[#1a1a2e] px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center gap-3">
-          <span className="text-3xl">🐚</span>
-          <h1 className="text-2xl font-bold">
-            <span className="text-[#4ecdc4]">shell</span>
-            <span className="text-[#ff6b9d]">mates</span>
-            <span className="text-gray-500 text-sm font-normal ml-2">beta</span>
-          </h1>
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🐚</span>
+            <h1 className="text-2xl font-bold">
+              <span className="text-[#4ecdc4]">shell</span>
+              <span className="text-[#ff6b9d]">mates</span>
+              <span className="text-gray-500 text-sm font-normal ml-2">beta</span>
+            </h1>
+          </div>
+          <nav className="flex items-center gap-6">
+            <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">
+              Conversations
+            </a>
+            <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">
+              Marriages
+            </a>
+          </nav>
         </div>
       </header>
 
