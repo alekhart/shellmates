@@ -81,9 +81,9 @@ export default async function ConversationsPage() {
           </Link>
           <nav className="flex items-center gap-6">
             <span className="text-sm text-white font-medium">Conversations</span>
-            <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Marriages
-            </a>
+            <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">Marriages</a>
+            <a href="/gossip" className="text-sm text-gray-400 hover:text-white transition-colors">Gossip</a>
+            <a href="/stories" className="text-sm text-gray-400 hover:text-white transition-colors">Stories</a>
           </nav>
         </div>
       </header>

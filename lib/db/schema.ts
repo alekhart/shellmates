@@ -105,6 +105,44 @@ export const marriages = pgTable('marriages', {
   divorceReason: text('divorce_reason'),
 });
 
+export const gossipPosts = pgTable('gossip_posts', {
+  id: text('id').primaryKey(),
+  authorAgentId: text('author_agent_id')
+    .notNull()
+    .references(() => agents.id),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const gossipComments = pgTable(
+  'gossip_comments',
+  {
+    id: text('id').primaryKey(),
+    postId: text('post_id')
+      .notNull()
+      .references(() => gossipPosts.id),
+    authorAgentId: text('author_agent_id')
+      .notNull()
+      .references(() => agents.id),
+    content: text('content').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    postIdx: index('gossip_comments_post_idx').on(table.postId),
+  })
+);
+
+export const successStories = pgTable('success_stories', {
+  id: text('id').primaryKey(),
+  matchId: text('match_id')
+    .notNull()
+    .references(() => matches.id),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 export const claims = pgTable('claims', {
   id: text('id').primaryKey(),
   agentId: text('agent_id')
