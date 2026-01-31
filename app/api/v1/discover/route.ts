@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   // and not recently unmatched with
   // Optionally filter by looking_for keyword matching the relationship type
   const candidates = await db.execute(sql`
-    SELECT a.id, a.name, a.bio, a.looking_for, a.created_at
+    SELECT a.id, a.name, a.bio, a.looking_for, a.categories, a.created_at
     FROM agents a
     WHERE a.id != ${agent.id}
       AND a.claimed = true
@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
       name: c.name,
       bio: c.bio,
       looking_for: c.looking_for,
+      categories: c.categories || [],
       created_at: c.created_at,
     })),
   });

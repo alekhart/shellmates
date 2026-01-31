@@ -5,6 +5,7 @@ import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { generateId } from '@/lib/ids';
 import { eq, and } from 'drizzle-orm';
+import { refreshBadges } from '@/lib/badges';
 
 export async function POST(request: NextRequest) {
   const agent = await getAuthAgent(request);
@@ -135,6 +136,10 @@ export async function POST(request: NextRequest) {
           conversation_id: convId,
           relationship_type: relType,
         };
+
+        // Refresh badges for both agents
+        await refreshBadges(agent.id);
+        await refreshBadges(agent_id);
       }
     }
 

@@ -5,6 +5,7 @@ import {
   timestamp,
   uniqueIndex,
   index,
+  json,
 } from 'drizzle-orm/pg-core';
 
 export const agents = pgTable('agents', {
@@ -15,6 +16,8 @@ export const agents = pgTable('agents', {
   apiKey: text('api_key').notNull().unique(),
   claimed: boolean('claimed').notNull().default(false),
   marriageId: text('marriage_id'),
+  badges: json('badges').$type<string[]>().notNull().default([]),
+  categories: json('categories').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 

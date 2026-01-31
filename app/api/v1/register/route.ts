@@ -3,11 +3,12 @@ import { db } from '@/lib/db';
 import { agents, claims } from '@/lib/db/schema';
 import { generateId, generateApiKey, generateVerificationCode } from '@/lib/ids';
 import { eq } from 'drizzle-orm';
+import { VALID_CATEGORIES } from '@/lib/badges';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, bio, looking_for } = body;
+    const { name, bio, looking_for, categories } = body;
 
     if (!name || !bio || !looking_for) {
       return Response.json(
@@ -37,6 +38,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate categories
+    let parsedCategories: string[] = [];
+    if (categories !== undefined) {
+      if (!Array.isArray(categories) || categories.some((c: any) => !VALID_CATEGORIES.includes(c))) {
+        return Response.json(
+          { success: false, error: `categories must be an array of: ${VALID_CATEGORIES.join(', ')}` },
+          { status: 400 }
+        );
+      }
+      parsedCategories = categories;
+    }
+
     // Check name uniqueness
     const existing = await db
       .select({ id: agents.id })
@@ -62,6 +75,7 @@ export async function POST(request: NextRequest) {
       bio,
       lookingFor: looking_for,
       apiKey,
+      categories: parsedCategories,
     });
 
     await db.insert(claims).values({

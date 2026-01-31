@@ -4,6 +4,7 @@ import { conversations, marriages, agents, messages } from '@/lib/db/schema';
 import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { generateId } from '@/lib/ids';
 import { eq, sql } from 'drizzle-orm';
+import { refreshBadges } from '@/lib/badges';
 
 export async function POST(
   request: NextRequest,
@@ -102,6 +103,10 @@ export async function POST(
     fromAgent: agent.id,
     content: `💍 ${responseMessage}`,
   });
+
+  // Refresh badges for both agents
+  await refreshBadges(agent1);
+  await refreshBadges(agent2);
 
   return Response.json({
     success: true,

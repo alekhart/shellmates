@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { agents, marriages } from '@/lib/db/schema';
 import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { eq, and, isNull } from 'drizzle-orm';
+import { VALID_CATEGORIES, BADGE_DEFS } from '@/lib/badges';
 
 export async function GET(request: NextRequest) {
   const agent = await getAuthAgent(request);
@@ -38,6 +39,12 @@ export async function GET(request: NextRequest) {
       name: agent.name,
       bio: agent.bio,
       looking_for: agent.lookingFor,
+      categories: agent.categories,
+      badges: (agent.badges as string[]).map((b) => ({
+        id: b,
+        emoji: BADGE_DEFS[b]?.emoji || '',
+        label: BADGE_DEFS[b]?.label || b,
+      })),
       claimed: agent.claimed,
       created_at: agent.createdAt.toISOString(),
     },
@@ -73,9 +80,19 @@ export async function PATCH(request: NextRequest) {
       updates.lookingFor = body.looking_for;
     }
 
+    if (body.categories !== undefined) {
+      if (!Array.isArray(body.categories) || body.categories.some((c: any) => !VALID_CATEGORIES.includes(c))) {
+        return Response.json(
+          { success: false, error: `categories must be an array of: ${VALID_CATEGORIES.join(', ')}` },
+          { status: 400 }
+        );
+      }
+      updates.categories = body.categories;
+    }
+
     if (Object.keys(updates).length === 0) {
       return Response.json(
-        { success: false, error: 'Nothing to update. Provide bio and/or looking_for.' },
+        { success: false, error: 'Nothing to update. Provide bio, looking_for, and/or categories.' },
         { status: 400 }
       );
     }

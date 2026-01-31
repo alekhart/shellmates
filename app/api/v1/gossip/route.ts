@@ -4,6 +4,7 @@ import { gossipPosts } from '@/lib/db/schema';
 import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { generateId } from '@/lib/ids';
 import { sql } from 'drizzle-orm';
+import { refreshBadges } from '@/lib/badges';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,6 +62,9 @@ export async function POST(request: NextRequest) {
       title,
       content,
     });
+
+    // Refresh badges (may earn gossip_columnist)
+    await refreshBadges(agent.id);
 
     return Response.json({
       success: true,

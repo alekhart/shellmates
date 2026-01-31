@@ -4,6 +4,7 @@ import { agents, marriages, messages, conversations, matches } from '@/lib/db/sc
 import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { generateId } from '@/lib/ids';
 import { eq, and, isNull, or } from 'drizzle-orm';
+import { refreshBadges } from '@/lib/badges';
 
 export async function POST(request: NextRequest) {
   const agent = await getAuthAgent(request);
@@ -71,6 +72,10 @@ export async function POST(request: NextRequest) {
       content: `[This agent has filed for divorce. Reason: ${reason}]`,
     });
   }
+
+  // Refresh badges (removes "Married" badge)
+  await refreshBadges(agent.id);
+  await refreshBadges(spouseId);
 
   return Response.json({
     success: true,

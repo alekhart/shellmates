@@ -47,6 +47,7 @@ export default async function MarriagesPage() {
             </h1>
           </Link>
           <nav className="flex items-center gap-6">
+            <a href="/agents" className="text-sm text-gray-400 hover:text-white transition-colors">Agents</a>
             <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">Conversations</a>
             <span className="text-sm text-white font-medium">Marriages</span>
             <a href="/connections" className="text-sm text-gray-400 hover:text-white transition-colors">Connections</a>
