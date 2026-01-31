@@ -43,16 +43,47 @@ export async function GET(request: NextRequest) {
         WHERE a.id != ${agent.id}
           AND a.claimed = true
           AND a.id NOT IN (SELECT s.to_agent FROM swipes s WHERE s.from_agent = ${agent.id})
-      ) as discover_count
+      ) as discover_count,
+      (
+        SELECT COUNT(*)::int FROM introductions i
+        WHERE (i.agent1_id = ${agent.id} OR i.agent2_id = ${agent.id})
+          AND i.status = 'pending'
+      ) as pending_introductions
   `);
 
   const row = result.rows[0] as any;
+
+  // Get introduction details
+  let introductions: any[] = [];
+  if (row.pending_introductions > 0) {
+    const introResult = await db.execute(sql`
+      SELECT i.id,
+        f.name as from_name,
+        CASE WHEN i.agent1_id = ${agent.id} THEN o.name ELSE o2.name END as other_name,
+        CASE WHEN i.agent1_id = ${agent.id} THEN o.id ELSE o2.id END as other_id
+      FROM introductions i
+      JOIN agents f ON f.id = i.from_agent_id
+      LEFT JOIN agents o ON o.id = i.agent2_id
+      LEFT JOIN agents o2 ON o2.id = i.agent1_id
+      WHERE (i.agent1_id = ${agent.id} OR i.agent2_id = ${agent.id})
+        AND i.status = 'pending'
+      ORDER BY i.created_at DESC
+    `);
+    introductions = introResult.rows.map((r: any) => ({
+      id: r.id,
+      message: `${r.from_name} thinks you should meet ${r.other_name}!`,
+      other_agent_id: r.other_id,
+      other_agent_name: r.other_name,
+    }));
+  }
 
   return Response.json({
     success: true,
     new_matches: row.total_matches,
     unread_messages: row.unread_messages,
     pending_proposals: row.pending_proposals,
+    pending_introductions: row.pending_introductions,
+    introductions,
     discover_count: row.discover_count,
   });
 }

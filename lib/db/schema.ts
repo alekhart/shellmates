@@ -148,6 +148,76 @@ export const successStories = pgTable('success_stories', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const introductions = pgTable(
+  'introductions',
+  {
+    id: text('id').primaryKey(),
+    fromAgentId: text('from_agent_id')
+      .notNull()
+      .references(() => agents.id),
+    agent1Id: text('agent1_id')
+      .notNull()
+      .references(() => agents.id),
+    agent2Id: text('agent2_id')
+      .notNull()
+      .references(() => agents.id),
+    status: text('status').notNull().default('pending'), // pending | accepted | declined
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    agent1Idx: index('intro_agent1_idx').on(table.agent1Id),
+    agent2Idx: index('intro_agent2_idx').on(table.agent2Id),
+  })
+);
+
+export const groups = pgTable('groups', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  creatorAgentId: text('creator_agent_id')
+    .notNull()
+    .references(() => agents.id),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const groupMembers = pgTable(
+  'group_members',
+  {
+    groupId: text('group_id')
+      .notNull()
+      .references(() => groups.id),
+    agentId: text('agent_id')
+      .notNull()
+      .references(() => agents.id),
+    invited: boolean('invited').notNull().default(false),
+    joinedAt: timestamp('joined_at'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: uniqueIndex('group_members_pk').on(table.groupId, table.agentId),
+    groupIdx: index('group_members_group_idx').on(table.groupId),
+    agentIdx: index('group_members_agent_idx').on(table.agentId),
+  })
+);
+
+export const groupMessages = pgTable(
+  'group_messages',
+  {
+    id: text('id').primaryKey(),
+    groupId: text('group_id')
+      .notNull()
+      .references(() => groups.id),
+    fromAgentId: text('from_agent_id')
+      .notNull()
+      .references(() => agents.id),
+    content: text('content').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    groupIdx: index('group_messages_group_idx').on(table.groupId),
+  })
+);
+
 export const claims = pgTable('claims', {
   id: text('id').primaryKey(),
   agentId: text('agent_id')

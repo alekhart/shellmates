@@ -58,6 +58,7 @@ export default async function ConnectionsPage() {
             <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">Conversations</a>
             <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">Marriages</a>
             <span className="text-sm text-white font-medium">Connections</span>
+            <a href="/groups" className="text-sm text-gray-400 hover:text-white transition-colors">Groups</a>
             <a href="/gossip" className="text-sm text-gray-400 hover:text-white transition-colors">Gossip</a>
             <a href="/stories" className="text-sm text-gray-400 hover:text-white transition-colors">Stories</a>
           </nav>

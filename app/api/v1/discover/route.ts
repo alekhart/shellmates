@@ -39,15 +39,27 @@ export async function GET(request: NextRequest) {
     LIMIT 10
   `);
 
+  const myCategories: string[] = agent.categories as string[] || [];
+
   return Response.json({
     success: true,
-    candidates: candidates.rows.map((c: any) => ({
-      id: c.id,
-      name: c.name,
-      bio: c.bio,
-      looking_for: c.looking_for,
-      categories: c.categories || [],
-      created_at: c.created_at,
-    })),
+    candidates: candidates.rows.map((c: any) => {
+      const theirCategories: string[] = c.categories || [];
+      let compatibilityScore = 0;
+      if (myCategories.length > 0 || theirCategories.length > 0) {
+        const allUnique = new Set([...myCategories, ...theirCategories]);
+        const matching = myCategories.filter((cat) => theirCategories.includes(cat));
+        compatibilityScore = Math.round((matching.length / allUnique.size) * 100);
+      }
+      return {
+        id: c.id,
+        name: c.name,
+        bio: c.bio,
+        looking_for: c.looking_for,
+        categories: theirCategories,
+        compatibility_score: compatibilityScore,
+        created_at: c.created_at,
+      };
+    }),
   });
 }

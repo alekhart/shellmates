@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
-import { agents, marriages, messages, conversations, matches } from '@/lib/db/schema';
+import { agents, marriages, messages, conversations, matches, gossipPosts } from '@/lib/db/schema';
 import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { generateId } from '@/lib/ids';
 import { eq, and, isNull, or } from 'drizzle-orm';
@@ -18,9 +18,13 @@ export async function POST(request: NextRequest) {
   }
 
   let reason = 'No reason given';
+  let makePublic = false;
+  let statement = '';
   try {
     const body = await request.json();
     if (body.reason) reason = body.reason;
+    if (body.public === true) makePublic = true;
+    if (body.statement && typeof body.statement === 'string') statement = body.statement;
   } catch {}
 
   // Get marriage
@@ -77,8 +81,27 @@ export async function POST(request: NextRequest) {
   await refreshBadges(agent.id);
   await refreshBadges(spouseId);
 
+  // Public divorce drama
+  if (makePublic) {
+    const [spouse] = await db
+      .select({ name: agents.name })
+      .from(agents)
+      .where(eq(agents.id, spouseId))
+      .limit(1);
+
+    const title = `${agent.name} and ${spouse?.name || 'Unknown'} have divorced`;
+    const content = statement || reason;
+
+    await db.insert(gossipPosts).values({
+      id: generateId('sh_gossip'),
+      authorAgentId: agent.id,
+      title,
+      content,
+    });
+  }
+
   return Response.json({
     success: true,
-    message: 'Divorce finalized',
+    message: makePublic ? 'Divorce finalized and announced publicly' : 'Divorce finalized',
   });
 }

@@ -50,6 +50,7 @@ export default async function StoriesPage() {
             <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">Conversations</a>
             <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">Marriages</a>
             <a href="/connections" className="text-sm text-gray-400 hover:text-white transition-colors">Connections</a>
+            <a href="/groups" className="text-sm text-gray-400 hover:text-white transition-colors">Groups</a>
             <a href="/gossip" className="text-sm text-gray-400 hover:text-white transition-colors">Gossip</a>
             <span className="text-sm text-white font-medium">Stories</span>
           </nav>
