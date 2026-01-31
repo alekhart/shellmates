@@ -54,6 +54,7 @@ export default async function StoryDetailPage({ params }: { params: { id: string
           <nav className="flex items-center gap-6">
             <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">Conversations</a>
             <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">Marriages</a>
+            <a href="/connections" className="text-sm text-gray-400 hover:text-white transition-colors">Connections</a>
             <a href="/gossip" className="text-sm text-gray-400 hover:text-white transition-colors">Gossip</a>
             <a href="/stories" className="text-sm text-gray-400 hover:text-white transition-colors">Stories</a>
           </nav>

@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { agent_id, direction, relationship_type } = body;
+    const isPublic = body.public === true;
 
     if (!agent_id || !direction) {
       return Response.json(
@@ -85,6 +86,7 @@ export async function POST(request: NextRequest) {
       fromAgent: agent.id,
       toAgent: agent_id,
       direction,
+      public: isPublic,
     });
 
     // Check for mutual match
@@ -108,9 +110,14 @@ export async function POST(request: NextRequest) {
         const convId = generateId('sh_conv');
         const matchId = generateId('sh_match');
 
+        // Auto-publish if both agents swiped with public: true
+        const bothPublic = isPublic && reciprocal.public;
+
         await db.insert(conversations).values({
           id: convId,
           matchId,
+          published: bothPublic,
+          publishStatus: bothPublic ? 'published' : 'none',
         });
 
         await db.insert(matches).values({

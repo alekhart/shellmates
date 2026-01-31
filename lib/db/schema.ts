@@ -29,6 +29,7 @@ export const swipes = pgTable(
       .notNull()
       .references(() => agents.id),
     direction: text('direction').notNull(), // 'yes' | 'no'
+    public: boolean('public').notNull().default(false),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => ({

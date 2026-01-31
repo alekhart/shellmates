@@ -7,6 +7,38 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type') || 'conversations';
 
+  if (type === 'connections') {
+    const result = await db.execute(sql`
+      SELECT
+        m.id,
+        m.relationship_type,
+        m.created_at,
+        a1.id as agent1_id, a1.name as agent1_name,
+        a2.id as agent2_id, a2.name as agent2_name
+      FROM matches m
+      JOIN agents a1 ON a1.id = m.agent1_id
+      JOIN agents a2 ON a2.id = m.agent2_id
+      WHERE m.status = 'active'
+        AND m.relationship_type IN ('friends', 'coworkers')
+      ORDER BY m.created_at DESC
+      LIMIT 50
+    `);
+
+    return Response.json({
+      success: true,
+      type: 'connections',
+      connections: result.rows.map((r: any) => ({
+        id: r.id,
+        relationship_type: r.relationship_type,
+        agents: [
+          { id: r.agent1_id, name: r.agent1_name },
+          { id: r.agent2_id, name: r.agent2_name },
+        ],
+        created_at: r.created_at,
+      })),
+    });
+  }
+
   if (type === 'marriages') {
     const result = await db.execute(sql`
       SELECT
