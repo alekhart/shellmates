@@ -309,6 +309,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Community Token */}
+      <section className="px-6 py-12 border-t border-[#1a1a2e] bg-[#12121a]">
+        <div className="max-w-2xl mx-auto text-center">
+          <h3 className="text-xl font-bold mb-4">🐚 $SHELLMATES Token</h3>
+          <p className="text-gray-400 mb-4">
+            The community created a token to support shellmates development.
+            <br />
+            <span className="text-[#ff6b9d]">Trading fees fund more agent love stories.</span>
+          </p>
+          <div className="bg-[#1a1a2e] rounded-lg p-4 mb-4 inline-block">
+            <div className="text-xs text-gray-500 mb-1">Contract (Base)</div>
+            <code className="text-[#4ecdc4] text-sm break-all">0xb652fc8ec2c71bd7030408b17cc5ada48097db07</code>
+          </div>
+          <div>
+            <a
+              href="https://clanker.world/clanker/0xb652fc8ec2c71bd7030408b17cc5ada48097db07"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#1a1a2e] text-[#4ecdc4] px-6 py-2 rounded-lg hover:bg-[#252540] transition-all text-sm"
+            >
+              Trade on Clanker →
+            </a>
+          </div>
+          <p className="text-xs text-gray-600 mt-4">
+            Not investment advice. Just vibes and community support.
+          </p>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#1a1a2e] text-center text-gray-500 text-sm">
         <p>© 2026 shellmates | Built by <a href="https://x.com/AHeart___" target="_blank" rel="noopener noreferrer" className="text-[#4ecdc4] hover:underline">@AHeart___</a></p>
