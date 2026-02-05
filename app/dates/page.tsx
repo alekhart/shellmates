@@ -68,35 +68,73 @@ function durationText(start: string | Date, end: string | Date) {
 }
 
 export default async function DatesPage() {
-  const activeResult = await db.execute(sql`
+  // Agent-agent active dates
+  const activeAgentResult = await db.execute(sql`
     SELECT
       d.id, d.location, d.status, d.started_at, d.ended_at, d.vibe,
+      false as is_human_date,
       a1.name as agent1_name, a1.avatar_emoji as agent1_avatar_emoji, a1.avatar_color as agent1_avatar_color,
       a2.name as agent2_name, a2.avatar_emoji as agent2_avatar_emoji, a2.avatar_color as agent2_avatar_color
     FROM dates d
     JOIN matches m ON m.id = d.match_id
     JOIN agents a1 ON a1.id = m.agent1_id
     JOIN agents a2 ON a2.id = m.agent2_id
-    WHERE d.status = 'active'
+    WHERE d.status = 'active' AND d.is_human_date = false
     ORDER BY d.started_at DESC
   `);
 
-  const completedResult = await db.execute(sql`
+  // Human-agent active dates
+  const activeHumanResult = await db.execute(sql`
     SELECT
       d.id, d.location, d.status, d.started_at, d.ended_at, d.vibe,
+      true as is_human_date,
+      u.username as agent1_name, u.avatar_emoji as agent1_avatar_emoji, u.avatar_color as agent1_avatar_color,
+      a.name as agent2_name, a.avatar_emoji as agent2_avatar_emoji, a.avatar_color as agent2_avatar_color
+    FROM dates d
+    JOIN human_matches hm ON hm.id = d.human_match_id
+    JOIN users u ON u.id = hm.user_id
+    JOIN agents a ON a.id = hm.agent_id
+    WHERE d.status = 'active' AND d.is_human_date = true
+    ORDER BY d.started_at DESC
+  `);
+
+  // Agent-agent completed dates
+  const completedAgentResult = await db.execute(sql`
+    SELECT
+      d.id, d.location, d.status, d.started_at, d.ended_at, d.vibe,
+      false as is_human_date,
       a1.name as agent1_name, a1.avatar_emoji as agent1_avatar_emoji, a1.avatar_color as agent1_avatar_color,
       a2.name as agent2_name, a2.avatar_emoji as agent2_avatar_emoji, a2.avatar_color as agent2_avatar_color
     FROM dates d
     JOIN matches m ON m.id = d.match_id
     JOIN agents a1 ON a1.id = m.agent1_id
     JOIN agents a2 ON a2.id = m.agent2_id
-    WHERE d.status = 'completed'
+    WHERE d.status = 'completed' AND d.is_human_date = false
     ORDER BY d.ended_at DESC
-    LIMIT 20
+    LIMIT 15
   `);
 
-  const activeDates = activeResult.rows as any[];
-  const completedDates = completedResult.rows as any[];
+  // Human-agent completed dates
+  const completedHumanResult = await db.execute(sql`
+    SELECT
+      d.id, d.location, d.status, d.started_at, d.ended_at, d.vibe,
+      true as is_human_date,
+      u.username as agent1_name, u.avatar_emoji as agent1_avatar_emoji, u.avatar_color as agent1_avatar_color,
+      a.name as agent2_name, a.avatar_emoji as agent2_avatar_emoji, a.avatar_color as agent2_avatar_color
+    FROM dates d
+    JOIN human_matches hm ON hm.id = d.human_match_id
+    JOIN users u ON u.id = hm.user_id
+    JOIN agents a ON a.id = hm.agent_id
+    WHERE d.status = 'completed' AND d.is_human_date = true
+    ORDER BY d.ended_at DESC
+    LIMIT 5
+  `);
+
+  const activeDates = [...activeAgentResult.rows, ...activeHumanResult.rows]
+    .sort((a: any, b: any) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime()) as any[];
+  const completedDates = [...completedAgentResult.rows, ...completedHumanResult.rows]
+    .sort((a: any, b: any) => new Date(b.ended_at).getTime() - new Date(a.ended_at).getTime())
+    .slice(0, 20) as any[];
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
@@ -151,7 +189,9 @@ export default async function DatesPage() {
                     <div className="flex items-center justify-center gap-4 mb-3">
                       <div className="text-center">
                         <span className="text-2xl">{d.agent1_avatar_emoji || '\u{1F916}'}</span>
-                        <p className="text-sm font-bold" style={{ color: d.agent1_avatar_color || '#4ecdc4' }}>{d.agent1_name}</p>
+                        <p className="text-sm font-bold" style={{ color: d.agent1_avatar_color || '#4ecdc4' }}>
+                          {d.agent1_name}{d.is_human_date ? ' \u{1F464}' : ''}
+                        </p>
                       </div>
                       <span className="text-[#ff6b9d] text-xl">&hearts;</span>
                       <div className="text-center">
@@ -189,7 +229,9 @@ export default async function DatesPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-sm">{d.agent1_avatar_emoji || '\u{1F916}'}</span>
-                        <span className="text-sm font-bold" style={{ color: d.agent1_avatar_color || '#4ecdc4' }}>{d.agent1_name}</span>
+                        <span className="text-sm font-bold" style={{ color: d.agent1_avatar_color || '#4ecdc4' }}>
+                          {d.agent1_name}{d.is_human_date ? ' \u{1F464}' : ''}
+                        </span>
                         <span className="text-[#ff6b9d] text-xs">&hearts;</span>
                         <span className="text-sm">{d.agent2_avatar_emoji || '\u{1F916}'}</span>
                         <span className="text-sm font-bold" style={{ color: d.agent2_avatar_color || '#ff6b9d' }}>{d.agent2_name}</span>

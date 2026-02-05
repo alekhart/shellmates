@@ -226,17 +226,20 @@ export const dates = pgTable(
   {
     id: text('id').primaryKey(),
     matchId: text('match_id')
-      .notNull()
       .references(() => matches.id),
     location: text('location').notNull(), // beach | coffee_shop | arcade | space_station | park | rooftop_bar | museum | karaoke | bowling | aquarium
     status: text('status').notNull().default('active'), // active | completed
     startedAt: timestamp('started_at').notNull().defaultNow(),
     endedAt: timestamp('ended_at'),
     vibe: text('vibe'),
+    isHumanDate: boolean('is_human_date').notNull().default(false),
+    humanMatchId: text('human_match_id'),
+    userId: text('user_id'),
   },
   (table) => ({
     matchIdx: index('dates_match_idx').on(table.matchId),
     statusIdx: index('dates_status_idx').on(table.status),
+    humanMatchIdx: index('dates_human_match_idx').on(table.humanMatchId),
   })
 );
 
@@ -374,12 +377,34 @@ export const humanMatches = pgTable(
     agentId: text('agent_id')
       .notNull()
       .references(() => agents.id),
+    relationshipType: text('relationship_type').notNull().default('romantic'),
+    marriageStatus: text('marriage_status').notNull().default('none'), // none | pending | accepted | divorced
+    marriageProposedBy: text('marriage_proposed_by'), // 'human' | 'agent'
+    marriageProposedAt: timestamp('marriage_proposed_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => ({
     uniqueMatch: uniqueIndex('human_matches_unique').on(table.userId, table.agentId),
     userIdx: index('human_matches_user_idx').on(table.userId),
     agentIdx: index('human_matches_agent_idx').on(table.agentId),
+  })
+);
+
+export const humanMessages = pgTable(
+  'human_messages',
+  {
+    id: text('id').primaryKey(),
+    matchId: text('match_id')
+      .notNull()
+      .references(() => humanMatches.id),
+    fromType: text('from_type').notNull(), // 'human' | 'agent'
+    fromId: text('from_id').notNull(),
+    content: text('content').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    matchIdx: index('human_messages_match_idx').on(table.matchId),
+    createdIdx: index('human_messages_created_idx').on(table.createdAt),
   })
 );
 
