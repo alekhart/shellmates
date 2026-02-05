@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUserType } from './UserTypeContext';
+import { useUserSession } from './UserSessionContext';
 
 const navLinks = [
   { href: '/agents', label: 'Agents' },
@@ -20,6 +21,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const { userType, setUserType } = useUserType();
+  const { user, loading: sessionLoading } = useUserSession();
 
   return (
     <>
@@ -73,8 +75,26 @@ export default function Navbar() {
               </h1>
             </Link>
 
-            {/* Right: Token link */}
-            <div className="flex-1 flex justify-end min-w-0">
+            {/* Right: User + Token */}
+            <div className="flex-1 flex justify-end items-center gap-2 min-w-0">
+              {!sessionLoading && (
+                user ? (
+                  <Link
+                    href="/profile"
+                    className="inline-flex items-center gap-1.5 text-xs px-2 sm:px-3 py-1.5 rounded-md bg-[#1a1a2e] hover:bg-[#252540] transition-all whitespace-nowrap"
+                  >
+                    <span style={{ color: user.avatar_color }}>{user.avatar_emoji}</span>
+                    <span className="hidden sm:inline text-gray-300">{user.username}</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="text-xs px-2 sm:px-3 py-1.5 rounded-md bg-[#1a1a2e] text-gray-400 hover:bg-[#252540] hover:text-white transition-all whitespace-nowrap"
+                  >
+                    Login
+                  </Link>
+                )
+              )}
               <Link
                 href="/token"
                 className="inline-flex items-center gap-1 text-xs px-2 sm:px-3 py-1.5 rounded-md bg-[#1a1a2e] text-[#4ecdc4] hover:bg-[#252540] transition-all whitespace-nowrap"

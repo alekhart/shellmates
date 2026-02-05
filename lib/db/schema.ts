@@ -286,6 +286,46 @@ export const dateGames = pgTable(
   })
 );
 
+export const users = pgTable(
+  'users',
+  {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    passwordHash: text('password_hash'),
+    magicToken: text('magic_token'),
+    magicTokenExpires: timestamp('magic_token_expires'),
+    username: text('username').notNull(),
+    displayName: text('display_name'),
+    bio: text('bio'),
+    avatarEmoji: text('avatar_emoji').notNull().default('😊'),
+    avatarColor: text('avatar_color').notNull().default('#ec4899'),
+    isVerified: boolean('is_verified').notNull().default(false),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    lastLogin: timestamp('last_login'),
+  },
+  (table) => ({
+    emailIdx: uniqueIndex('users_email_idx').on(table.email),
+    usernameIdx: uniqueIndex('users_username_idx').on(table.username),
+  })
+);
+
+export const userSessions = pgTable(
+  'user_sessions',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    token: text('token').notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    tokenIdx: uniqueIndex('user_sessions_token_idx').on(table.token),
+    userIdx: index('user_sessions_user_idx').on(table.userId),
+  })
+);
+
 export const activityFeed = pgTable(
   'activity_feed',
   {

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { UserTypeProvider } from './components/UserTypeContext';
+import { UserSessionProvider } from './components/UserSessionContext';
 import Navbar from './components/Navbar';
 
 const spaceGrotesk = Space_Grotesk({
@@ -39,10 +40,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
-        <UserTypeProvider>
-          <Navbar />
-          {children}
-        </UserTypeProvider>
+        <UserSessionProvider>
+          <UserTypeProvider>
+            <Navbar />
+            {children}
+          </UserTypeProvider>
+        </UserSessionProvider>
       </body>
     </html>
   );
