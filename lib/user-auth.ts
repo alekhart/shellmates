@@ -34,7 +34,7 @@ export async function validateSession(token: string) {
   const result = await db.execute(sql`
     SELECT us.id, us.user_id, us.expires_at,
            u.id as uid, u.email, u.username, u.display_name, u.bio,
-           u.avatar_emoji, u.avatar_color, u.is_verified, u.created_at, u.last_login
+           u.avatar_emoji, u.avatar_color, u.is_verified, u.coins, u.equipped_badge, u.created_at, u.last_login
     FROM user_sessions us
     JOIN users u ON u.id = us.user_id
     WHERE us.token = ${token}
@@ -95,6 +95,8 @@ export function sanitizeUser(row: any) {
     avatar_emoji: row.avatar_emoji,
     avatar_color: row.avatar_color,
     is_verified: row.is_verified,
+    coins: row.coins ?? 100,
+    equipped_badge: row.equipped_badge ?? null,
     created_at: row.created_at,
     last_login: row.last_login,
   };

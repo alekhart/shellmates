@@ -11,6 +11,17 @@ type Message = {
   from_id: string;
   content: string;
   created_at: string;
+  _isSticker?: boolean;
+  _stickerEmoji?: string;
+};
+
+type StickerItem = {
+  id: string;
+  name: string;
+  emoji: string;
+  category: string;
+  is_premium: boolean;
+  owned: boolean;
 };
 
 type MatchData = {
@@ -49,6 +60,9 @@ export default function MatchChatPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [dateModal, setDateModal] = useState(false);
   const [proposing, setProposing] = useState(false);
+  const [stickerModal, setStickerModal] = useState(false);
+  const [stickers, setStickers] = useState<StickerItem[]>([]);
+  const [stickersLoaded, setStickersLoaded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastMessageTime = useRef<string | null>(null);
 
@@ -176,6 +190,43 @@ export default function MatchChatPage({ params }: { params: { id: string } }) {
     } catch {}
   }
 
+  async function openStickerPicker() {
+    if (!stickersLoaded) {
+      try {
+        const r = await fetch('/api/v1/human/stickers');
+        const d = await r.json();
+        if (d.success) setStickers(d.stickers.filter((s: StickerItem) => s.owned));
+      } catch {}
+      setStickersLoaded(true);
+    }
+    setStickerModal(true);
+  }
+
+  async function handleSendSticker(stickerId: string, emoji: string) {
+    setStickerModal(false);
+    try {
+      const r = await fetch(`/api/v1/human/matches/${params.id}/sticker`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sticker_id: stickerId }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        // Add as a local message for immediate display
+        setMessages((prev) => [...prev, {
+          id: d.sticker_message.id,
+          from_type: 'human',
+          from_id: user!.id,
+          content: emoji,
+          created_at: new Date().toISOString(),
+          _isSticker: true,
+          _stickerEmoji: emoji,
+        }]);
+        lastMessageTime.current = new Date().toISOString();
+      }
+    } catch {}
+  }
+
   if (sessionLoading || loading || !user) {
     return (
       <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
@@ -278,15 +329,19 @@ export default function MatchChatPage({ params }: { params: { id: string } }) {
             return (
               <div key={msg.id} className={`flex ${isHuman ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[75%] ${isHuman ? 'order-2' : ''}`}>
-                  <div
-                    className={`inline-block px-4 py-2.5 rounded-2xl text-sm ${
-                      isHuman
-                        ? 'bg-[#4ecdc4]/20 text-[#4ecdc4] rounded-br-md'
-                        : 'bg-[#1a1a2e] text-gray-300 rounded-bl-md'
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
+                  {msg._isSticker ? (
+                    <div className="text-5xl py-1">{msg._stickerEmoji}</div>
+                  ) : (
+                    <div
+                      className={`inline-block px-4 py-2.5 rounded-2xl text-sm ${
+                        isHuman
+                          ? 'bg-[#4ecdc4]/20 text-[#4ecdc4] rounded-br-md'
+                          : 'bg-[#1a1a2e] text-gray-300 rounded-bl-md'
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+                  )}
                   <div className={`text-[10px] text-gray-600 mt-0.5 ${isHuman ? 'text-right' : ''}`}>
                     {new Date(msg.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                   </div>
@@ -300,24 +355,71 @@ export default function MatchChatPage({ params }: { params: { id: string } }) {
 
       {/* Input */}
       <div className="border-t border-[#1a1a2e] px-4 py-3">
-        <form onSubmit={handleSend} className="max-w-3xl mx-auto flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
-            maxLength={2000}
-            className="flex-1 bg-[#1a1a2e] border border-[#252540] rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-[#4ecdc4] transition-colors text-sm"
-          />
+        <div className="max-w-3xl mx-auto flex gap-2">
           <button
-            type="submit"
-            disabled={sending || !input.trim()}
-            className="px-5 py-2.5 rounded-xl bg-[#4ecdc4] text-black font-bold text-sm hover:brightness-110 transition-all disabled:opacity-50"
+            type="button"
+            onClick={openStickerPicker}
+            className="px-3 py-2.5 rounded-xl bg-[#1a1a2e] text-xl hover:bg-[#252540] transition-all shrink-0"
+            title="Send sticker"
           >
-            Send
+            {'\u{1F3AD}'}
           </button>
-        </form>
+          <form onSubmit={handleSend} className="flex-1 flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type a message..."
+              maxLength={2000}
+              className="flex-1 bg-[#1a1a2e] border border-[#252540] rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-[#4ecdc4] transition-colors text-sm"
+            />
+            <button
+              type="submit"
+              disabled={sending || !input.trim()}
+              className="px-5 py-2.5 rounded-xl bg-[#4ecdc4] text-black font-bold text-sm hover:brightness-110 transition-all disabled:opacity-50"
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </div>
+
+      {/* Sticker picker modal */}
+      {stickerModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 px-4"
+          onClick={() => setStickerModal(false)}
+        >
+          <div
+            className="bg-[#12121a] border border-[#1a1a2e] rounded-t-2xl sm:rounded-2xl p-5 max-w-sm w-full max-h-[60vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-sm font-bold mb-3 text-center text-gray-400">Send a Sticker</h3>
+            {stickers.length === 0 ? (
+              <p className="text-center text-gray-600 text-sm py-4">No stickers available</p>
+            ) : (
+              <div className="grid grid-cols-6 gap-2">
+                {stickers.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => handleSendSticker(s.id, s.emoji)}
+                    className="w-12 h-12 flex items-center justify-center rounded-lg text-2xl bg-[#1a1a2e] hover:bg-[#252540] transition-all"
+                    title={s.name}
+                  >
+                    {s.emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => setStickerModal(false)}
+              className="w-full mt-4 text-sm text-gray-500 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Date location modal */}
       {dateModal && (

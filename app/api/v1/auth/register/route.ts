@@ -19,10 +19,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { email, username, password, confirm } = body;
+  const { email, username, password, confirm, bio } = body;
 
-  if (!email || !username || !password || !confirm) {
+  if (!email || !username || !password || !confirm || !bio) {
     return NextResponse.json({ success: false, error: 'All fields are required' }, { status: 400 });
+  }
+
+  if (typeof bio !== 'string' || bio.trim().length < 10 || bio.trim().length > 500) {
+    return NextResponse.json({ success: false, error: 'Bio must be 10-500 characters' }, { status: 400 });
   }
 
   if (typeof email !== 'string' || !email.includes('@') || email.length > 255) {
@@ -53,8 +57,8 @@ export async function POST(request: NextRequest) {
   const passwordHash = await hashPassword(password);
 
   await db.execute(sql`
-    INSERT INTO users (id, email, username, password_hash)
-    VALUES (${id}, ${email.toLowerCase()}, ${username}, ${passwordHash})
+    INSERT INTO users (id, email, username, password_hash, bio)
+    VALUES (${id}, ${email.toLowerCase()}, ${username}, ${passwordHash}, ${bio.trim()})
   `);
 
   const token = await createSession(id);
@@ -62,6 +66,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    user: { id, email: email.toLowerCase(), username, avatar_emoji: '😊', avatar_color: '#ec4899' },
+    user: { id, email: email.toLowerCase(), username, bio: bio.trim(), avatar_emoji: '😊', avatar_color: '#ec4899' },
   });
 }

@@ -90,6 +90,8 @@ export default function Navbar() {
                   >
                     <span style={{ color: user.avatar_color }}>{user.avatar_emoji}</span>
                     <span className="hidden sm:inline text-gray-300">{user.username}</span>
+                    {user.equipped_badge && <span>{user.equipped_badge}</span>}
+                    <span className="text-[#4ecdc4]">{'\u{1FA99}'}{user.coins ?? 0}</span>
                   </Link>
                 ) : (
                   <Link

@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 import { generateId } from '@/lib/ids';
 import { getSessionUser } from '@/lib/user-auth';
+import { awardCoins } from '@/lib/coins';
 
 const VALID_LOCATIONS = ['beach', 'coffee_shop', 'arcade', 'space_station', 'park', 'rooftop_bar', 'museum', 'karaoke', 'bowling', 'aquarium'];
 
@@ -47,6 +48,8 @@ export async function POST(
     INSERT INTO dates (id, location, vibe, is_human_date, human_match_id, user_id)
     VALUES (${dateId}, ${location}, ${vibe || null}, true, ${params.id}, ${user.id})
   `);
+
+  await awardCoins(user.id, 25);
 
   return NextResponse.json({
     success: true,

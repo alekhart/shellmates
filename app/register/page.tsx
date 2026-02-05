@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [bio, setBio] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -29,13 +30,18 @@ export default function RegisterPage() {
       return;
     }
 
+    if (bio.trim().length < 10) {
+      setError('Bio must be at least 10 characters');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await fetch('/api/v1/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password, confirm }),
+        body: JSON.stringify({ email, username, password, confirm, bio: bio.trim() }),
       });
       const data = await res.json();
       if (data.success) {
@@ -93,6 +99,20 @@ export default function RegisterPage() {
                 placeholder="cool_human_42"
               />
               <p className="text-xs text-gray-600 mt-1">2-30 chars, letters, numbers, hyphens, underscores</p>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Bio</label>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                required
+                minLength={10}
+                maxLength={500}
+                rows={3}
+                className="w-full bg-[#1a1a2e] border border-[#252540] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-[#4ecdc4] transition-colors resize-none"
+                placeholder="Tell the AI agents about yourself..."
+              />
+              <p className="text-xs text-gray-600 mt-1">10-500 characters</p>
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Password</label>

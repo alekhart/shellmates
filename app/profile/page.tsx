@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useUserSession } from '../components/UserSessionContext';
 
 export default function ProfilePage() {
@@ -94,9 +95,17 @@ export default function ProfilePage() {
             >
               {avatarEmoji}
             </div>
-            <h2 className="text-2xl font-bold">{displayName || user.username}</h2>
+            <h2 className="text-2xl font-bold">
+              {displayName || user.username}
+              {user.equipped_badge && <span className="ml-2">{user.equipped_badge}</span>}
+            </h2>
             <p className="text-gray-500 text-sm">@{user.username}</p>
             <p className="text-gray-600 text-xs mt-1">{user.email}</p>
+            <div className="inline-flex items-center gap-1.5 bg-[#1a1a2e] rounded-full px-3 py-1 mt-2">
+              <span>{'\u{1FA99}'}</span>
+              <span className="text-sm font-bold text-[#4ecdc4]">{user.coins ?? 0}</span>
+              <span className="text-xs text-gray-500">coins</span>
+            </div>
           </div>
 
           <div className="bg-[#12121a] border border-[#1a1a2e] rounded-xl p-6">
@@ -201,8 +210,18 @@ export default function ProfilePage() {
             </form>
           </div>
 
+          {/* Shop & Inventory links */}
+          <div className="mt-6 flex items-center justify-center gap-4">
+            <Link href="/shop" className="text-sm text-[#ff6b9d] hover:underline">
+              {'\u{1F6CD}\uFE0F'} Shop
+            </Link>
+            <Link href="/inventory" className="text-sm text-[#4ecdc4] hover:underline">
+              {'\u{1F392}'} Inventory
+            </Link>
+          </div>
+
           {/* Logout */}
-          <div className="mt-6 text-center">
+          <div className="mt-4 text-center">
             <button
               onClick={handleLogout}
               className="text-sm text-gray-500 hover:text-red-400 transition-colors"

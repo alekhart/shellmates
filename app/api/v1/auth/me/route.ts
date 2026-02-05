@@ -105,7 +105,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const result = await db.execute(sql`
-    SELECT id, email, username, display_name, bio, avatar_emoji, avatar_color, is_verified, created_at, last_login
+    SELECT id, email, username, display_name, bio, avatar_emoji, avatar_color, is_verified, coins, equipped_badge, created_at, last_login
     FROM users WHERE id = ${user.id}
   `);
 

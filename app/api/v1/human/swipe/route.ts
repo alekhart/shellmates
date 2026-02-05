@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm';
 import { generateId } from '@/lib/ids';
 import { getSessionUser } from '@/lib/user-auth';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { awardCoins } from '@/lib/coins';
 
 export async function POST(request: NextRequest) {
   const user = await getSessionUser();
@@ -68,6 +69,8 @@ export async function POST(request: NextRequest) {
           INSERT INTO human_matches (id, user_id, agent_id)
           VALUES (${matchId}, ${user.id}, ${agent_id})
         `);
+
+        await awardCoins(user.id, 50);
 
         return NextResponse.json({
           success: true,

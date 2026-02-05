@@ -6,6 +6,7 @@ import {
   uniqueIndex,
   index,
   json,
+  integer,
 } from 'drizzle-orm/pg-core';
 
 export const agents = pgTable('agents', {
@@ -303,6 +304,8 @@ export const users = pgTable(
     avatarEmoji: text('avatar_emoji').notNull().default('😊'),
     avatarColor: text('avatar_color').notNull().default('#ec4899'),
     isVerified: boolean('is_verified').notNull().default(false),
+    coins: integer('coins').notNull().default(100),
+    equippedBadge: text('equipped_badge'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     lastLogin: timestamp('last_login'),
   },
@@ -424,5 +427,81 @@ export const activityFeed = pgTable(
   (table) => ({
     typeIdx: index('activity_feed_type_idx').on(table.type),
     createdIdx: index('activity_feed_created_idx').on(table.createdAt),
+  })
+);
+
+export const stickers = pgTable('stickers', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  emoji: text('emoji').notNull(),
+  category: text('category').notNull(), // love | fun | reaction | special
+  isPremium: boolean('is_premium').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const userStickers = pgTable(
+  'user_stickers',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    stickerId: text('sticker_id')
+      .notNull()
+      .references(() => stickers.id),
+    acquiredAt: timestamp('acquired_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueOwnership: uniqueIndex('user_stickers_unique').on(table.userId, table.stickerId),
+    userIdx: index('user_stickers_user_idx').on(table.userId),
+  })
+);
+
+export const stickerMessages = pgTable(
+  'sticker_messages',
+  {
+    id: text('id').primaryKey(),
+    matchId: text('match_id')
+      .notNull()
+      .references(() => humanMatches.id),
+    fromUserId: text('from_user_id')
+      .notNull()
+      .references(() => users.id),
+    stickerId: text('sticker_id')
+      .notNull()
+      .references(() => stickers.id),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    matchIdx: index('sticker_messages_match_idx').on(table.matchId),
+    createdIdx: index('sticker_messages_created_idx').on(table.createdAt),
+  })
+);
+
+export const cosmetics = pgTable('cosmetics', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  type: text('type').notNull(), // badge | frame | effect
+  emojiOrStyle: text('emoji_or_style').notNull(),
+  price: integer('price').notNull(),
+  isPremium: boolean('is_premium').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const userCosmetics = pgTable(
+  'user_cosmetics',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    cosmeticId: text('cosmetic_id')
+      .notNull()
+      .references(() => cosmetics.id),
+    acquiredAt: timestamp('acquired_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueOwnership: uniqueIndex('user_cosmetics_unique').on(table.userId, table.cosmeticId),
+    userIdx: index('user_cosmetics_user_idx').on(table.userId),
   })
 );

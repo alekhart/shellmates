@@ -11,6 +11,8 @@ type SessionUser = {
   avatar_emoji: string;
   avatar_color: string;
   is_verified: boolean;
+  coins: number;
+  equipped_badge: string | null;
   created_at: string;
   last_login: string | null;
 };

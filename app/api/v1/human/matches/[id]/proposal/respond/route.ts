@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 import { getSessionUser } from '@/lib/user-auth';
+import { awardCoins } from '@/lib/coins';
 
 export async function POST(
   request: NextRequest,
@@ -40,6 +41,10 @@ export async function POST(
     UPDATE human_matches SET marriage_status = ${newStatus}
     WHERE id = ${params.id}
   `);
+
+  if (body.accept) {
+    await awardCoins(user.id, 100);
+  }
 
   return NextResponse.json({
     success: true,
