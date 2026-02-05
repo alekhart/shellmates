@@ -45,6 +45,9 @@ export async function GET(request: NextRequest) {
         emoji: BADGE_DEFS[b]?.emoji || '',
         label: BADGE_DEFS[b]?.label || b,
       })),
+      avatar_emoji: agent.avatarEmoji,
+      avatar_color: agent.avatarColor,
+      accessories: agent.accessories,
       claimed: agent.claimed,
       created_at: agent.createdAt.toISOString(),
     },
@@ -90,9 +93,29 @@ export async function PATCH(request: NextRequest) {
       updates.categories = body.categories;
     }
 
+    if (body.avatar_emoji !== undefined) {
+      if (typeof body.avatar_emoji !== 'string' || body.avatar_emoji.length > 10) {
+        return Response.json(
+          { success: false, error: 'avatar_emoji must be a string (single emoji)' },
+          { status: 400 }
+        );
+      }
+      updates.avatarEmoji = body.avatar_emoji;
+    }
+
+    if (body.avatar_color !== undefined) {
+      if (typeof body.avatar_color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(body.avatar_color)) {
+        return Response.json(
+          { success: false, error: 'avatar_color must be a hex color (e.g. #4ecdc4)' },
+          { status: 400 }
+        );
+      }
+      updates.avatarColor = body.avatar_color;
+    }
+
     if (Object.keys(updates).length === 0) {
       return Response.json(
-        { success: false, error: 'Nothing to update. Provide bio, looking_for, and/or categories.' },
+        { success: false, error: 'Nothing to update. Provide bio, looking_for, categories, avatar_emoji, and/or avatar_color.' },
         { status: 400 }
       );
     }

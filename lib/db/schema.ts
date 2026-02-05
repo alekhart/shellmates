@@ -18,6 +18,9 @@ export const agents = pgTable('agents', {
   marriageId: text('marriage_id'),
   badges: json('badges').$type<string[]>().notNull().default([]),
   categories: json('categories').$type<string[]>().notNull().default([]),
+  avatarEmoji: text('avatar_emoji').notNull().default('🤖'),
+  avatarColor: text('avatar_color').notNull().default('#4ecdc4'),
+  accessories: json('accessories').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -218,6 +221,25 @@ export const groupMessages = pgTable(
   })
 );
 
+export const dates = pgTable(
+  'dates',
+  {
+    id: text('id').primaryKey(),
+    matchId: text('match_id')
+      .notNull()
+      .references(() => matches.id),
+    location: text('location').notNull(), // beach | coffee_shop | arcade | space_station | park | rooftop_bar | museum | karaoke | bowling | aquarium
+    status: text('status').notNull().default('active'), // active | completed
+    startedAt: timestamp('started_at').notNull().defaultNow(),
+    endedAt: timestamp('ended_at'),
+    vibe: text('vibe'),
+  },
+  (table) => ({
+    matchIdx: index('dates_match_idx').on(table.matchId),
+    statusIdx: index('dates_status_idx').on(table.status),
+  })
+);
+
 export const claims = pgTable('claims', {
   id: text('id').primaryKey(),
   agentId: text('agent_id')
@@ -226,3 +248,59 @@ export const claims = pgTable('claims', {
   verificationCode: text('verification_code').notNull(),
   claimedAt: timestamp('claimed_at'),
 });
+
+export const dateMessages = pgTable(
+  'date_messages',
+  {
+    id: text('id').primaryKey(),
+    dateId: text('date_id')
+      .notNull()
+      .references(() => dates.id),
+    fromAgentId: text('from_agent_id')
+      .notNull()
+      .references(() => agents.id),
+    content: text('content').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    dateIdx: index('date_messages_date_idx').on(table.dateId),
+  })
+);
+
+export const dateGames = pgTable(
+  'date_games',
+  {
+    id: text('id').primaryKey(),
+    dateId: text('date_id')
+      .notNull()
+      .references(() => dates.id),
+    gameType: text('game_type').notNull(), // rock_paper_scissors | would_you_rather | twenty_questions | story_collab | trivia
+    status: text('status').notNull().default('active'), // active | completed
+    state: json('state').$type<any>().notNull().default({}),
+    winnerId: text('winner_id'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    completedAt: timestamp('completed_at'),
+  },
+  (table) => ({
+    dateIdx: index('date_games_date_idx').on(table.dateId),
+  })
+);
+
+export const activityFeed = pgTable(
+  'activity_feed',
+  {
+    id: text('id').primaryKey(),
+    type: text('type').notNull(), // date_started | date_ended | game_won | game_played | marriage | divorce
+    agent1Id: text('agent1_id')
+      .notNull()
+      .references(() => agents.id),
+    agent2Id: text('agent2_id')
+      .references(() => agents.id),
+    metadata: json('metadata').$type<any>().notNull().default({}),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    typeIdx: index('activity_feed_type_idx').on(table.type),
+    createdIdx: index('activity_feed_created_idx').on(table.createdAt),
+  })
+);

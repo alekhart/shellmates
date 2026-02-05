@@ -1,0 +1,115 @@
+/* ===== Date scene container ===== */
+.date-scene {
+  background: #12121a;
+  min-height: 280px;
+}
+
+/* ===== Scene backgrounds ===== */
+.date-scene-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.2;
+  border-radius: inherit;
+}
+
+.date-scene-bg-beach {
+  background: linear-gradient(180deg, #1a3a4a 0%, #0a2a3a 40%, rgba(78, 205, 196, 0.3) 80%, rgba(78, 205, 196, 0.15) 100%);
+  animation: scene-beach 5s ease-in-out infinite;
+}
+@keyframes scene-beach {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.35; }
+}
+
+.date-scene-bg-coffee_shop {
+  background: linear-gradient(180deg, rgba(200, 160, 100, 0.3) 0%, rgba(120, 80, 40, 0.15) 50%, transparent 100%);
+}
+
+.date-scene-bg-space_station {
+  background:
+    radial-gradient(1px 1px at 15% 25%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 15%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 55%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 75%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 35%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 65%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 85%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 45%, white 0%, transparent 100%),
+    radial-gradient(2px 2px at 25% 50%, rgba(78, 205, 196, 0.8) 0%, transparent 100%),
+    radial-gradient(2px 2px at 70% 30%, rgba(255, 107, 157, 0.8) 0%, transparent 100%);
+  animation: scene-stars 4s ease-in-out infinite;
+}
+@keyframes scene-stars {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+}
+
+.date-scene-bg-arcade {
+  background: linear-gradient(135deg, rgba(78, 205, 196, 0.15) 0%, rgba(255, 107, 157, 0.15) 50%, rgba(167, 139, 250, 0.15) 100%);
+  animation: scene-neon 3s ease-in-out infinite;
+}
+@keyframes scene-neon {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.35; }
+}
+
+.date-scene-bg-park {
+  background: linear-gradient(180deg, rgba(78, 205, 100, 0.2) 0%, rgba(78, 205, 100, 0.05) 50%, transparent 100%);
+}
+
+.date-scene-bg-rooftop_bar {
+  background: linear-gradient(180deg, rgba(20, 10, 40, 0.5) 0%, transparent 40%, rgba(255, 107, 157, 0.1) 100%);
+}
+
+.date-scene-bg-museum {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 220, 150, 0.2) 0%, transparent 60%);
+}
+
+.date-scene-bg-karaoke {
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.15) 0%, rgba(167, 139, 250, 0.15) 50%, rgba(78, 205, 196, 0.15) 100%);
+  animation: scene-karaoke 4s ease-in-out infinite;
+}
+@keyframes scene-karaoke {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+.date-scene-bg-bowling {
+  background: linear-gradient(90deg, transparent 0%, rgba(78, 205, 196, 0.1) 50%, transparent 100%);
+}
+
+.date-scene-bg-aquarium {
+  background: linear-gradient(180deg, rgba(0, 50, 80, 0.3) 0%, rgba(0, 100, 150, 0.15) 50%, rgba(78, 205, 196, 0.1) 100%);
+}
+
+/* ===== Avatar bounce ===== */
+.date-avatar {
+  animation: avatar-bounce 3s ease-in-out infinite;
+}
+.date-avatar:nth-child(2) {
+  animation-delay: 1.5s;
+}
+@keyframes avatar-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ===== Heart pulse ===== */
+.date-heart-center {
+  animation: heart-pulse 2s ease-in-out infinite;
+}
+@keyframes heart-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* ===== Scene pulse dot ===== */
+.date-scene-pulse {
+  animation: scene-pulse 2s ease-in-out infinite;
+}
+@keyframes scene-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}

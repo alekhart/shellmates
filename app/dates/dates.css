@@ -1,0 +1,279 @@
+/* ===== Card float / glow ===== */
+.date-card-active {
+  animation: card-breathe 4s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(78, 205, 196, 0.05);
+}
+@keyframes card-breathe {
+  0%, 100% { transform: translateY(0); box-shadow: 0 0 20px rgba(78, 205, 196, 0.05); }
+  50% { transform: translateY(-4px); box-shadow: 0 0 30px rgba(78, 205, 196, 0.12); }
+}
+
+/* ===== Active pulse dot ===== */
+.date-pulse {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ===== Floating hearts ===== */
+.date-hearts {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+.date-heart {
+  position: absolute;
+  bottom: -20px;
+  font-size: 12px;
+  opacity: 0;
+  animation: float-heart 6s ease-in infinite;
+}
+@keyframes float-heart {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  10% { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(-180px) scale(1); }
+}
+
+/* ===== Ambient base ===== */
+.date-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.15;
+  border-radius: inherit;
+}
+
+/* ----- Beach: wave gradient ----- */
+.date-ambient-beach {
+  background: linear-gradient(
+    180deg,
+    transparent 50%,
+    rgba(78, 205, 196, 0.3) 70%,
+    rgba(78, 205, 196, 0.1) 100%
+  );
+  animation: beach-waves 4s ease-in-out infinite;
+}
+@keyframes beach-waves {
+  0%, 100% { background-position: 0 0; opacity: 0.15; }
+  50% { background-position: 0 8px; opacity: 0.25; }
+}
+
+/* ----- Coffee shop: steam ----- */
+.date-ambient-coffee_shop {
+  background: linear-gradient(
+    180deg,
+    rgba(200, 160, 100, 0.2) 0%,
+    transparent 40%
+  );
+  animation: steam-rise 3s ease-in-out infinite;
+}
+@keyframes steam-rise {
+  0%, 100% { opacity: 0.1; transform: translateY(0); }
+  50% { opacity: 0.25; transform: translateY(-6px); }
+}
+
+/* ----- Space station: twinkling ----- */
+.date-ambient-space_station {
+  background:
+    radial-gradient(1px 1px at 20% 30%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 20%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 60%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 80%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 70%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 45%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 55%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 15%, white 0%, transparent 100%);
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
+}
+
+/* ----- Aquarium: bubbles ----- */
+.date-ambient-aquarium {
+  overflow: hidden;
+}
+.date-ambient-aquarium::before,
+.date-ambient-aquarium::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(78, 205, 196, 0.3);
+  animation: bubble-rise 5s ease-in infinite;
+}
+.date-ambient-aquarium::before {
+  width: 6px;
+  height: 6px;
+  left: 25%;
+  bottom: -10px;
+  animation-delay: 0s;
+}
+.date-ambient-aquarium::after {
+  width: 4px;
+  height: 4px;
+  left: 65%;
+  bottom: -10px;
+  animation-delay: 2s;
+}
+@keyframes bubble-rise {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  100% { transform: translateY(-200px); opacity: 0; }
+}
+
+/* ----- Karaoke: music notes ----- */
+.date-ambient-karaoke {
+  overflow: hidden;
+}
+.date-ambient-karaoke::before,
+.date-ambient-karaoke::after {
+  position: absolute;
+  font-size: 14px;
+  opacity: 0;
+  animation: note-float 4s ease-in-out infinite;
+}
+.date-ambient-karaoke::before {
+  content: '\266B';
+  right: 15%;
+  bottom: 10px;
+  animation-delay: 0s;
+}
+.date-ambient-karaoke::after {
+  content: '\266A';
+  right: 30%;
+  bottom: 10px;
+  animation-delay: 2s;
+}
+@keyframes note-float {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  15% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-120px) rotate(20deg); }
+}
+
+/* ----- Park: leaf sway ----- */
+.date-ambient-park {
+  background: linear-gradient(
+    180deg,
+    rgba(78, 205, 100, 0.15) 0%,
+    transparent 50%
+  );
+  animation: leaf-sway 5s ease-in-out infinite;
+}
+@keyframes leaf-sway {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.2; }
+}
+
+/* ----- Rooftop bar: city glow ----- */
+.date-ambient-rooftop_bar {
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(255, 107, 157, 0.1) 100%
+  );
+  animation: city-glow 4s ease-in-out infinite;
+}
+@keyframes city-glow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+/* ----- Museum: soft warm light ----- */
+.date-ambient-museum {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255, 220, 150, 0.15) 0%,
+    transparent 60%
+  );
+}
+
+/* ----- Arcade: neon flicker ----- */
+.date-ambient-arcade {
+  background: linear-gradient(
+    135deg,
+    rgba(78, 205, 196, 0.1) 0%,
+    rgba(255, 107, 157, 0.1) 50%,
+    rgba(167, 139, 250, 0.1) 100%
+  );
+  animation: neon-shift 3s ease-in-out infinite;
+}
+@keyframes neon-shift {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.25; }
+}
+
+/* ----- Bowling: lane shine ----- */
+.date-ambient-bowling {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(78, 205, 196, 0.1) 50%,
+    transparent 100%
+  );
+  animation: lane-shine 3s ease-in-out infinite;
+}
+@keyframes lane-shine {
+  0%, 100% { opacity: 0.1; transform: translateX(-20px); }
+  50% { opacity: 0.2; transform: translateX(20px); }
+}
+
+/* ===== Demo date card ===== */
+.demo-date-card {
+  opacity: 0.75;
+  max-width: 480px;
+  margin: 0 auto;
+  transition: opacity 0.3s;
+}
+.demo-date-card:hover {
+  opacity: 0.9;
+}
+
+/* Demo badge */
+.demo-badge {
+  backdrop-filter: blur(4px);
+}
+
+/* Demo message appear animation */
+.demo-msg {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+.demo-msg-new {
+  animation: demo-msg-in 0.4s ease-out;
+}
+@keyframes demo-msg-in {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Demo typing indicator */
+.demo-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 0;
+}
+.demo-typing-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #4a4a5a;
+  animation: demo-typing-bounce 1.2s ease-in-out infinite;
+}
+.demo-typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.demo-typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes demo-typing-bounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}

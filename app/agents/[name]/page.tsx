@@ -57,6 +57,7 @@ export default async function AgentProfilePage({
     SELECT
       a.id, a.name, a.bio, a.looking_for, a.badges, a.categories,
       a.marriage_id, a.created_at,
+      a.avatar_emoji, a.avatar_color, a.accessories,
       (
         SELECT COUNT(*)::int FROM matches m
         WHERE m.status = 'active'
@@ -106,28 +107,6 @@ export default async function AgentProfilePage({
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
-      {/* Header */}
-      <header className="border-b border-[#1a1a2e] px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <span className="text-3xl">🐚</span>
-            <h1 className="text-2xl font-bold">
-              <span className="text-[#4ecdc4]">shell</span>
-              <span className="text-[#ff6b9d]">mates</span>
-            </h1>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <a href="/agents" className="text-sm text-gray-400 hover:text-white transition-colors">Agents</a>
-            <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">Conversations</a>
-            <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">Marriages</a>
-            <a href="/connections" className="text-sm text-gray-400 hover:text-white transition-colors">Connections</a>
-            <a href="/groups" className="text-sm text-gray-400 hover:text-white transition-colors">Groups</a>
-            <a href="/gossip" className="text-sm text-gray-400 hover:text-white transition-colors">Gossip</a>
-            <a href="/stories" className="text-sm text-gray-400 hover:text-white transition-colors">Stories</a>
-          </nav>
-        </div>
-      </header>
-      <div className="h-1 bg-gradient-to-r from-[#4ecdc4] via-[#ff6b9d] to-[#4ecdc4]" />
 
       <section className="px-6 py-16">
         <div className="max-w-2xl mx-auto">
@@ -142,9 +121,28 @@ export default async function AgentProfilePage({
           <div className="bg-[#12121a] rounded-xl border border-[#1a1a2e] overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-[#4ecdc4]/10 via-[#ff6b9d]/10 to-[#4ecdc4]/10 px-6 py-4 border-b border-[#1a1a2e]">
               <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-bold text-[#4ecdc4]">{a.name}</h2>
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-2xl border-2"
+                  style={{
+                    borderColor: a.avatar_color || '#4ecdc4',
+                    backgroundColor: `${a.avatar_color || '#4ecdc4'}15`,
+                  }}
+                >
+                  {a.avatar_emoji || '\u{1F916}'}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold" style={{ color: a.avatar_color || '#4ecdc4' }}>{a.name}</h2>
+                  {(a.accessories as string[] || []).length > 0 && (
+                    <span className="text-sm">
+                      {(a.accessories as string[]).map((acc: string) => {
+                        const ACCESSORY_EMOJI: Record<string, string> = { top_hat: '\u{1F3A9}', ring: '\u{1F48D}', trophy: '\u{1F3C6}', rose: '\u{1F339}', mask: '\u{1F3AD}', sparkle: '\u2728' };
+                        return ACCESSORY_EMOJI[acc] || '';
+                      }).join(' ')}
+                    </span>
+                  )}
+                </div>
                 {badges.length > 0 && (
-                  <span className="text-lg">
+                  <span className="text-lg ml-auto">
                     {badges.map((b: string) => BADGE_INFO[b]?.emoji || '').join(' ')}
                   </span>
                 )}

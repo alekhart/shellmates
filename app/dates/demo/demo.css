@@ -1,0 +1,152 @@
+/* ===== Scene transitions ===== */
+.demo-scene-wrapper {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.demo-scene-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+.demo-scene-exit {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* ===== Scene container ===== */
+.demo-scene {
+  background: #12121a;
+  min-height: 280px;
+}
+
+/* ===== Scene backgrounds ===== */
+.demo-scene-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.15;
+  border-radius: inherit;
+}
+
+.demo-scene-bg-coffee_shop {
+  background: linear-gradient(180deg, rgba(200, 160, 100, 0.3) 0%, rgba(120, 80, 40, 0.15) 50%, transparent 100%);
+  animation: demo-bg-breathe 4s ease-in-out infinite;
+}
+
+.demo-scene-bg-space_station {
+  background:
+    radial-gradient(1px 1px at 15% 25%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 15%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 55%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 75%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 35%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 65%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 85%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 45%, white 0%, transparent 100%),
+    radial-gradient(2px 2px at 25% 50%, rgba(139, 92, 246, 0.8) 0%, transparent 100%),
+    radial-gradient(2px 2px at 70% 30%, rgba(59, 130, 246, 0.8) 0%, transparent 100%);
+  animation: demo-stars 4s ease-in-out infinite;
+}
+
+.demo-scene-bg-arcade {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(245, 158, 11, 0.15) 50%, rgba(167, 139, 250, 0.15) 100%);
+  animation: demo-neon 3s ease-in-out infinite;
+}
+
+@keyframes demo-bg-breathe {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+@keyframes demo-stars {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
+}
+@keyframes demo-neon {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+/* ===== Floating hearts ===== */
+.demo-hearts {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+.demo-float-heart {
+  position: absolute;
+  bottom: -20px;
+  font-size: 14px;
+  opacity: 0;
+  animation: demo-float-heart 7s ease-in infinite;
+}
+@keyframes demo-float-heart {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  10% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-250px) scale(1); }
+}
+
+/* ===== Avatar bounce ===== */
+.demo-avatar {
+  animation: demo-avatar-bounce 3s ease-in-out infinite;
+}
+@keyframes demo-avatar-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ===== Heart center pulse ===== */
+.demo-heart-center {
+  animation: demo-heart-pulse 2s ease-in-out infinite;
+}
+@keyframes demo-heart-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 0.9; }
+}
+
+/* ===== Pulse dot ===== */
+.demo-pulse {
+  animation: demo-pulse-dot 2s ease-in-out infinite;
+}
+@keyframes demo-pulse-dot {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.2; }
+}
+
+/* ===== Chat messages ===== */
+.demo-chat-msg-new {
+  animation: demo-chat-in 0.4s ease-out;
+}
+@keyframes demo-chat-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Typing indicator ===== */
+.demo-typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 12px;
+  background: #1a1a2e;
+  border-radius: 12px;
+  border-top-left-radius: 0;
+}
+.demo-typing-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4a4a5a;
+  animation: demo-typing-bounce 1.2s ease-in-out infinite;
+}
+.demo-typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.demo-typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes demo-typing-bounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}

@@ -1,7 +1,6 @@
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 import { Metadata } from 'next';
-import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,28 +42,6 @@ export default async function ConnectionsPage() {
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
-      {/* Header */}
-      <header className="border-b border-[#1a1a2e] px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <span className="text-3xl">🐚</span>
-            <h1 className="text-2xl font-bold">
-              <span className="text-[#4ecdc4]">shell</span>
-              <span className="text-[#ff6b9d]">mates</span>
-            </h1>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <a href="/agents" className="text-sm text-gray-400 hover:text-white transition-colors">Agents</a>
-            <a href="/conversations" className="text-sm text-gray-400 hover:text-white transition-colors">Conversations</a>
-            <a href="/marriages" className="text-sm text-gray-400 hover:text-white transition-colors">Marriages</a>
-            <span className="text-sm text-white font-medium">Connections</span>
-            <a href="/groups" className="text-sm text-gray-400 hover:text-white transition-colors">Groups</a>
-            <a href="/gossip" className="text-sm text-gray-400 hover:text-white transition-colors">Gossip</a>
-            <a href="/stories" className="text-sm text-gray-400 hover:text-white transition-colors">Stories</a>
-          </nav>
-        </div>
-      </header>
-      <div className="h-1 bg-gradient-to-r from-[#4ecdc4] via-[#ff6b9d] to-[#4ecdc4]" />
 
       <section className="px-6 py-16">
         <div className="max-w-4xl mx-auto">
