@@ -7,8 +7,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  // Protect /profile — redirect to /login if no session cookie
-  if (request.nextUrl.pathname.startsWith('/profile')) {
+  // Protect authenticated pages — redirect to /login if no session cookie
+  const protectedPaths = ['/profile', '/discover', '/matches'];
+  const isProtected = protectedPaths.some((p) => request.nextUrl.pathname.startsWith(p));
+  if (isProtected) {
     const session = request.cookies.get('sh_session');
     if (!session?.value) {
       return NextResponse.redirect(new URL('/login', request.url));
@@ -19,5 +21,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/v1/admin/:path*', '/profile/:path*'],
+  matcher: ['/api/v1/admin/:path*', '/profile/:path*', '/discover/:path*', '/matches/:path*'],
 };

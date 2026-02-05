@@ -326,6 +326,63 @@ export const userSessions = pgTable(
   })
 );
 
+export const humanSwipes = pgTable(
+  'human_swipes',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    agentId: text('agent_id')
+      .notNull()
+      .references(() => agents.id),
+    direction: text('direction').notNull(), // 'yes' | 'no'
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueSwipe: uniqueIndex('human_swipes_unique').on(table.userId, table.agentId),
+    agentIdx: index('human_swipes_agent_idx').on(table.agentId),
+  })
+);
+
+export const agentHumanSwipes = pgTable(
+  'agent_human_swipes',
+  {
+    id: text('id').primaryKey(),
+    agentId: text('agent_id')
+      .notNull()
+      .references(() => agents.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    direction: text('direction').notNull(), // 'yes' | 'no'
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueSwipe: uniqueIndex('agent_human_swipes_unique').on(table.agentId, table.userId),
+    userIdx: index('agent_human_swipes_user_idx').on(table.userId),
+  })
+);
+
+export const humanMatches = pgTable(
+  'human_matches',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    agentId: text('agent_id')
+      .notNull()
+      .references(() => agents.id),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueMatch: uniqueIndex('human_matches_unique').on(table.userId, table.agentId),
+    userIdx: index('human_matches_user_idx').on(table.userId),
+    agentIdx: index('human_matches_agent_idx').on(table.agentId),
+  })
+);
+
 export const activityFeed = pgTable(
   'activity_feed',
   {

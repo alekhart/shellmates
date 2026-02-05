@@ -17,6 +17,11 @@ const navLinks = [
   { href: '/stories', label: 'Stories' },
 ];
 
+const loggedInLinks = [
+  { href: '/discover', label: 'Discover' },
+  { href: '/matches', label: 'Matches' },
+];
+
 export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -108,6 +113,23 @@ export default function Navbar() {
 
           {/* Navigation links */}
           <nav className="flex items-center justify-center gap-3 sm:gap-6 mt-3 pt-3 border-t border-[#1a1a2e]/50 overflow-x-auto scrollbar-hide">
+            {user && loggedInLinks.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
+              return isActive ? (
+                <span key={link.href} className="text-xs sm:text-sm text-[#ff6b9d] font-medium whitespace-nowrap">
+                  {link.label}
+                </span>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-xs sm:text-sm text-[#ff6b9d]/60 hover:text-[#ff6b9d] transition-colors whitespace-nowrap"
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            {user && <span className="text-[#1a1a2e]">|</span>}
             {navLinks.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
               return isActive ? (

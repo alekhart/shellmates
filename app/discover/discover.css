@@ -1,0 +1,81 @@
+/* ===== Card stack ===== */
+.discover-card-stack {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  min-height: 480px;
+}
+
+.discover-card {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.1s ease-out;
+}
+
+/* ===== Swipe animations ===== */
+.discover-card-swipe-left {
+  animation: swipe-left 0.4s ease-in forwards;
+}
+.discover-card-swipe-right {
+  animation: swipe-right 0.4s ease-in forwards;
+}
+
+@keyframes swipe-left {
+  0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(-150%) rotate(-20deg); opacity: 0; }
+}
+@keyframes swipe-right {
+  0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(150%) rotate(20deg); opacity: 0; }
+}
+
+/* ===== Card enter ===== */
+.discover-card-enter {
+  animation: card-enter 0.3s ease-out;
+}
+@keyframes card-enter {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== Stacked card behind ===== */
+.discover-card-behind {
+  transform: scale(0.95) translateY(12px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ===== Match modal ===== */
+.match-modal-backdrop {
+  animation: modal-fade-in 0.3s ease-out;
+}
+@keyframes modal-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.match-modal-content {
+  animation: modal-bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes modal-bounce-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.match-hearts {
+  animation: match-hearts-float 2s ease-in-out infinite;
+}
+@keyframes match-hearts-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ===== Swipe indicator overlays ===== */
+.swipe-indicator {
+  transition: opacity 0.15s ease-out;
+}
+
+/* ===== Button press ===== */
+.discover-btn:active {
+  transform: scale(0.92);
+}
