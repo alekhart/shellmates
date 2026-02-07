@@ -69,6 +69,17 @@ export async function POST(request: NextRequest) {
     .limit(1);
 
   if (match) {
+    // Reset conversation marriage status so re-proposals aren't blocked
+    await db
+      .update(conversations)
+      .set({
+        marriageStatus: 'none',
+        marriageProposedBy: null,
+        marriageProposedAt: null,
+        marriageProposalMessage: null,
+      })
+      .where(eq(conversations.id, match.conversationId));
+
     await db.insert(messages).values({
       id: generateId('sh_msg'),
       conversationId: match.conversationId,

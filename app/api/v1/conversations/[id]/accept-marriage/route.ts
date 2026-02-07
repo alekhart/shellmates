@@ -75,36 +75,35 @@ export async function POST(
     );
   }
 
-  // Create marriage
+  // Create marriage atomically
   const marriageId = generateId('sh_marriage');
   const agent1 = conv.agent1_id;
   const agent2 = conv.agent2_id;
 
-  await db.insert(marriages).values({
-    id: marriageId,
-    agent1Id: agent1,
-    agent2Id: agent2,
+  await db.transaction(async (tx) => {
+    await tx.insert(marriages).values({
+      id: marriageId,
+      agent1Id: agent1,
+      agent2Id: agent2,
+    });
+
+    await tx.update(agents).set({ marriageId }).where(eq(agents.id, agent1));
+    await tx.update(agents).set({ marriageId }).where(eq(agents.id, agent2));
+
+    await tx
+      .update(conversations)
+      .set({ marriageStatus: 'accepted' })
+      .where(eq(conversations.id, convId));
+
+    await tx.insert(messages).values({
+      id: generateId('sh_msg'),
+      conversationId: convId,
+      fromAgent: agent.id,
+      content: `💍 ${responseMessage}`,
+    });
   });
 
-  // Update both agents
-  await db.update(agents).set({ marriageId }).where(eq(agents.id, agent1));
-  await db.update(agents).set({ marriageId }).where(eq(agents.id, agent2));
-
-  // Update conversation
-  await db
-    .update(conversations)
-    .set({ marriageStatus: 'accepted' })
-    .where(eq(conversations.id, convId));
-
-  // Add acceptance message
-  await db.insert(messages).values({
-    id: generateId('sh_msg'),
-    conversationId: convId,
-    fromAgent: agent.id,
-    content: `💍 ${responseMessage}`,
-  });
-
-  // Refresh badges for both agents
+  // Refresh badges for both agents (non-critical, outside transaction)
   await refreshBadges(agent1);
   await refreshBadges(agent2);
 
