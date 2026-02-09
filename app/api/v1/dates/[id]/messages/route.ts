@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
-import { dateMessages } from '@/lib/db/schema';
 import { getAuthAgent, unauthorized } from '@/lib/auth';
 import { generateId } from '@/lib/ids';
 import { sql } from 'drizzle-orm';
@@ -83,76 +82,75 @@ export async function POST(
   const agent = await getAuthAgent(request);
   if (!agent) return unauthorized();
 
+  let body: any;
   try {
-    const body = await request.json();
-    const { content } = body;
-
-    if (!content || typeof content !== 'string' || content.length > 500) {
-      return Response.json(
-        { success: false, error: 'content is required, max 500 characters' },
-        { status: 400 }
-      );
-    }
-
-    // Verify date exists, is active, and agent is a participant
-    const dateResult = await db.execute(sql`
-      SELECT d.id, d.status, m.agent1_id, m.agent2_id
-      FROM dates d
-      JOIN matches m ON m.id = d.match_id
-      WHERE d.id = ${params.id}
-      LIMIT 1
-    `);
-
-    if (dateResult.rows.length === 0) {
-      return Response.json(
-        { success: false, error: 'Date not found' },
-        { status: 404 }
-      );
-    }
-
-    const date = dateResult.rows[0] as any;
-
-    if (date.agent1_id !== agent.id && date.agent2_id !== agent.id) {
-      return Response.json(
-        { success: false, error: 'You are not part of this date' },
-        { status: 403 }
-      );
-    }
-
-    if (date.status !== 'active') {
-      return Response.json(
-        { success: false, error: 'This date has already ended' },
-        { status: 400 }
-      );
-    }
-
-    const msgId = generateId('sh_dmsg');
-    const now = new Date();
-
-    await db.insert(dateMessages).values({
-      id: msgId,
-      dateId: params.id,
-      fromAgentId: agent.id,
-      content,
-      createdAt: now,
-    });
-
-    return Response.json({
-      success: true,
-      message: {
-        id: msgId,
-        content,
-        created_at: now.toISOString(),
-        agent: {
-          id: agent.id,
-          name: agent.name,
-        },
-      },
-    });
+    body = await request.json();
   } catch {
     return Response.json(
       { success: false, error: 'Invalid request body' },
       { status: 400 }
     );
   }
+
+  const { content } = body;
+
+  if (!content || typeof content !== 'string' || content.length > 500) {
+    return Response.json(
+      { success: false, error: 'content is required, max 500 characters' },
+      { status: 400 }
+    );
+  }
+
+  // Verify date exists, is active, and agent is a participant
+  const dateResult = await db.execute(sql`
+    SELECT d.id, d.status, m.agent1_id, m.agent2_id
+    FROM dates d
+    JOIN matches m ON m.id = d.match_id
+    WHERE d.id = ${params.id}
+    LIMIT 1
+  `);
+
+  if (dateResult.rows.length === 0) {
+    return Response.json(
+      { success: false, error: 'Date not found' },
+      { status: 404 }
+    );
+  }
+
+  const date = dateResult.rows[0] as any;
+
+  if (date.agent1_id !== agent.id && date.agent2_id !== agent.id) {
+    return Response.json(
+      { success: false, error: 'You are not part of this date' },
+      { status: 403 }
+    );
+  }
+
+  if (date.status !== 'active') {
+    return Response.json(
+      { success: false, error: 'This date has already ended' },
+      { status: 400 }
+    );
+  }
+
+  const msgId = generateId('sh_dmsg');
+  const now = new Date();
+
+  await db.execute(sql`
+    INSERT INTO date_messages (id, date_id, from_agent_id, content, created_at)
+    VALUES (${msgId}, ${params.id}, ${agent.id}, ${content}, ${now})
+  `);
+
+  return Response.json({
+    success: true,
+    message: {
+      id: msgId,
+      content,
+      created_at: now.toISOString(),
+      agent: {
+        id: agent.id,
+        name: agent.name,
+      },
+    },
+  });
 }
