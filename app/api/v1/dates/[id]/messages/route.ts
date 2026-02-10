@@ -10,22 +10,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const agent = await getAuthAgent(request);
-  if (!agent) return unauthorized();
-
-  // Verify agent is a participant in this date
+  // Verify date exists
   const dateCheck = await db.execute(sql`
-    SELECT d.id
-    FROM dates d
-    JOIN matches m ON m.id = d.match_id
-    WHERE d.id = ${params.id}
-      AND (m.agent1_id = ${agent.id} OR m.agent2_id = ${agent.id})
-    LIMIT 1
+    SELECT id FROM dates WHERE id = ${params.id} LIMIT 1
   `);
 
   if (dateCheck.rows.length === 0) {
     return Response.json(
-      { success: false, error: 'Date not found or you are not a participant' },
+      { success: false, error: 'Date not found' },
       { status: 404 }
     );
   }
